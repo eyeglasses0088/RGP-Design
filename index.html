@@ -6,10 +6,10 @@
     <title>OptoVision 智慧隱形眼鏡驗配系統</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     
     <style>
-        /* 沿用明亮現代醫療風格 */
         :root {
             --bg-main: #f1f5f9; --bg-panel: #ffffff; --border-color: #cbd5e1;
             --primary-blue: #0284c7; --primary-green: #059669; --text-main: #1e293b;
@@ -37,15 +37,11 @@
         
         .action-bar { grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: 15px; margin-top: 20px; }
         .btn { border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; color: white; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
-        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
         .btn-secondary { background: #64748b; }
         .btn-success { background: var(--primary-green); }
         .btn-primary { background: var(--primary-blue); }
         
-        /* 系統提示訊息區塊 */
-        #sys-message {
-            margin-top: 20px; padding: 15px; border-radius: 6px; display: none; font-weight: bold; text-align: center; grid-column: 1 / -1;
-        }
+        #sys-message { margin-top: 20px; padding: 15px; border-radius: 6px; display: none; font-weight: bold; text-align: center; grid-column: 1 / -1; }
         .msg-success { background: #d1fae5; color: #065f46; border: 1px solid #10b981; }
         .msg-error { background: #fee2e2; color: #991b1b; border: 1px solid #ef4444; }
     </style>
@@ -55,52 +51,25 @@
     <header>
         <div class="logo"><i class="fa-solid fa-notes-medical"></i> OptoVision System</div>
         <div class="main-tabs">
-            <button class="tab-btn active" onclick="switchTab('RGP_Sphere', this)">硬式對稱</button>
-            <button class="tab-btn" onclick="switchTab('RGP_Toric', this)">硬式環曲 (Toric)</button>
-            <button class="tab-btn" onclick="switchTab('Soft', this)">軟式驗配</button>
+            <button class="tab-btn active" onclick="alert('已切換至: 硬式對稱')">硬式對稱</button>
+            <button class="tab-btn" onclick="alert('已切換至: 硬式環曲')">硬式環曲 (Toric)</button>
+            <button class="tab-btn" onclick="alert('已切換至: 軟式驗配')">軟式驗配</button>
         </div>
     </header>
 
     <div class="customer-bar">
         <div><label>姓名：</label><input type="text" id="cust_name" placeholder="王大明"></div>
         <div><label>手機：</label><input type="tel" id="cust_phone" placeholder="0912345678"></div>
-        <div><label>生日：</label><input type="date" id="cust_birthday"></div>
+        <div><label>生日：</label><input type="date" id="cust_birthday" value="1990-01-01"></div>
     </div>
 
     <div class="eyes-container">
-        <div class="eye-panel od">
-            <h3 style="color: var(--od-color); margin-bottom: 15px;">右眼 (OD) AUTO</h3>
-            <div class="grid-inputs">
-                <div class="input-group"><label>SPH</label><input type="number" step="0.25"></div>
-                <div class="input-group"><label>CYL</label><input type="number" step="0.25"></div>
-                <div class="input-group"><label>AXIS</label><input type="number"></div>
-            </div>
-            <div class="grid-inputs">
-                <div class="input-group"><label>K1 (平坦)</label><input type="number" step="0.01"></div>
-                <div class="input-group"><label>K2 (陡峭)</label><input type="number" step="0.01"></div>
-                <div class="input-group"><label>戴鏡驗光 OR</label><input type="number" step="0.25"></div>
-            </div>
-        </div>
-
-        <div class="eye-panel os">
-            <h3 style="color: var(--os-color); margin-bottom: 15px;">左眼 (OS) AUTO</h3>
-            <div class="grid-inputs">
-                <div class="input-group"><label>SPH</label><input type="number" step="0.25"></div>
-                <div class="input-group"><label>CYL</label><input type="number" step="0.25"></div>
-                <div class="input-group"><label>AXIS</label><input type="number"></div>
-            </div>
-            <div class="grid-inputs">
-                <div class="input-group"><label>K1 (平坦)</label><input type="number" step="0.01"></div>
-                <div class="input-group"><label>K2 (陡峭)</label><input type="number" step="0.01"></div>
-                <div class="input-group"><label>戴鏡驗光 OR</label><input type="number" step="0.25"></div>
-            </div>
-        </div>
+        <div class="eye-panel od"><h3 style="color: var(--od-color);">右眼 (OD) 區域</h3><p style="margin-top:10px;">(測試中，請先測試下方儲存按鈕)</p></div>
+        <div class="eye-panel os"><h3 style="color: var(--os-color);">左眼 (OS) 區域</h3><p style="margin-top:10px;">(測試中，請先測試下方儲存按鈕)</p></div>
 
         <div id="sys-message"></div>
 
         <div class="action-bar">
-            <button class="btn btn-secondary" onclick="testAction(this, '試戴片庫功能即將上線')"><i class="fa-solid fa-database"></i> 管理試戴片庫</button>
-            <button class="btn btn-primary" onclick="testAction(this, 'PDF 輸出引擎準備中')"><i class="fa-solid fa-file-pdf"></i> 輸出 PDF</button>
             <button class="btn btn-success" id="saveBtn" onclick="saveToSupabase()"><i class="fa-solid fa-cloud-arrow-up"></i> 儲存至 Supabase</button>
         </div>
     </div>
@@ -109,70 +78,56 @@
         // 1. 初始化 Supabase
         const supabaseUrl = 'https://pyyszbkcemqvmrecokwt.supabase.co';
         const supabaseKey = 'sb_publishable_kVgIy7INN2ohTMbsdh7PZg_TWG4LH7p';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-
-        // 2. 切換 TAB (實體回饋)
-        function switchTab(type, element) {
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            element.classList.add('active');
-            showMessage(`已切換至【${element.innerText}】模式`, 'success');
+        
+        let supabase;
+        try {
+            supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+            console.log("Supabase SDK 載入成功");
+        } catch (e) {
+            alert("❌ 嚴重錯誤：Supabase SDK 無法載入！請確認你的網路連線，或不要用 file:/// 開啟，改用 Live Server。");
         }
 
-        // 3. 通用按鈕測試 (確保按鍵有反應)
-        function testAction(btn, msg) {
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 處理中...';
-            btn.disabled = true;
-            
-            setTimeout(() => {
-                showMessage(msg, 'success');
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-            }, 800);
-        }
-
-        // 4. 顯示系統訊息
-        function showMessage(text, type) {
-            const msgBox = document.getElementById('sys-message');
-            msgBox.textContent = text;
-            msgBox.className = type === 'success' ? 'msg-success' : 'msg-error';
-            msgBox.style.display = 'block';
-            setTimeout(() => msgBox.style.display = 'none', 3500);
-        }
-
-        // 5. 核心：寫入 Supabase (搭配 RLS Policy)
+        // 2. 核心寫入功能
         async function saveToSupabase() {
+            // 第一道防線：確認按鈕有被觸發
+            console.log("按鈕已被點擊！");
+            
             const name = document.getElementById('cust_name').value.trim();
             const phone = document.getElementById('cust_phone').value.trim();
             const birthday = document.getElementById('cust_birthday').value;
-            const btn = document.getElementById('saveBtn');
 
             if(!name || !phone || !birthday) {
-                showMessage('⚠️ 儲存失敗：請先填寫上方姓名、手機與生日欄位！', 'error');
+                alert('⚠️ 請填寫完整姓名、手機與生日！');
                 return;
             }
 
-            // 按鈕進入讀取狀態
-            const originalHTML = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 寫入資料庫中...';
-            btn.disabled = true;
+            const msgBox = document.getElementById('sys-message');
+            msgBox.style.display = 'block';
+            msgBox.className = 'msg-success';
+            msgBox.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 正在連線到 Supabase...';
 
             try {
+                // 執行寫入
                 const { data, error } = await supabase
                     .from('customers')
                     .insert([{ name: name, phone: phone, birthday: birthday }])
                     .select();
 
-                if (error) throw error;
+                if (error) {
+                    throw error; // 丟給 catch 處理
+                }
                 
-                showMessage(`✅ 寫入成功！客戶 ${name} 資料已儲存，且受 RLS 保護。`, 'success');
+                // 成功
+                console.log("寫入成功資料：", data);
+                msgBox.innerHTML = `✅ 寫入成功！已將 ${name} 的資料存入資料庫。`;
+                alert(`恭喜！寫入成功！`);
                 
             } catch (err) {
-                showMessage(`❌ 寫入失敗：${err.message} (請確認步驟一的 RLS Policy 是否已執行)`, 'error');
-            } finally {
-                // 恢復按鈕狀態
-                btn.innerHTML = originalHTML;
-                btn.disabled = false;
+                // 失敗
+                console.error("Supabase 寫入錯誤：", err);
+                msgBox.className = 'msg-error';
+                msgBox.innerHTML = `❌ 寫入失敗：${err.message}`;
+                alert(`錯誤：${err.message}\n\n這通常是因為第一步的 SQL 沒執行，或是欄位對不上。`);
             }
         }
     </script>
